@@ -1,619 +1,452 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 
 <head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<title>Material Handler</title>
+	<link rel="icon" href="/favicon.ico">
 
-<meta charset="UTF-8">
+	<style>
+		body {
+			margin: 0;
+			padding: 20px;
+			background: #0f1117;
+			color: white;
+			font-family: Arial;
+			text-align: center
+		}
 
-<meta name="viewport"
-      content="width=device-width,initial-scale=1">
+		.card {
+			max-width: 450px;
+			margin: auto;
+			padding: 20px;
+			background: #1a1d26;
+			border-radius: 16px
+		}
 
-<title>Material Handler - Turret Console</title>
+		h1 {
+			color: #4da6ff
+		}
 
-<link rel="icon" href="/favicon.ico">
+		h3 {
+			margin-bottom: 8px
+		}
 
+		hr {
+			border: 0;
+			border-top: 1px solid #333;
+			margin: 22px 0
+		}
 
-<style>
+		.nav {
+			width: 240px;
+			padding: 14px;
+			border: 0;
+			border-radius: 10px;
+			background: #0780ff;
+			color: white;
+			font-size: 17px
+		}
 
-body{
-background:#0f1117;
-color:white;
-font-family:Segoe UI,Arial,sans-serif;
-text-align:center;
-margin:0;
-padding:20px;
-}
+		#status {
+			margin-bottom: 15px;
+			font-weight: bold
+		}
 
+		#speed,
+		#tspeed {
+			font-size: 20px;
+			font-weight: bold;
+			margin: 8px
+		}
 
-.card{
-max-width:500px;
-margin:auto;
-background:#1a1d26;
-border-radius:18px;
-padding:25px;
-box-shadow:0 0 20px rgba(0,0,0,.5);
-}
+		#bar {
+			height: 16px;
+			background: #303746;
+			border-radius: 10px;
+			overflow: hidden
+		}
 
+		#fill {
+			height: 100%;
+			width: 0;
+			background: #0780ff;
+			transition: .1s
+		}
 
-h1{
-color:#4da6ff;
-margin-top:0;
-margin-bottom:20px;
-}
+		#slider {
+			width: 100%;
+			height: 45px;
+			accent-color: #0780ff;
+			touch-action: none
+		}
 
+		#dir {
+			color: #aaa;
+			margin-top: 6px
+		}
 
-button{
-width:100px;
-height:75px;
-font-size:28px;
-border:none;
-border-radius:12px;
-background:#2d3446;
-color:white;
-margin:6px;
-cursor:pointer;
-user-select:none;
-touch-action:none;
-transition:.15s;
-}
+		#lastcmd {
+			margin-top: 12px;
+			color: #777;
+			font-size: 12px;
+			min-height: 16px
+		}
 
+		.info {
+			color: #aaa;
+			font-size: 14px;
+			line-height: 1.5;
+			margin-top: 15px
+		}
 
-button:hover{
-background:#3e4a66;
-}
+		@media(min-width:700px) {
+			#touch {
+				display: none
+			}
+		}
 
-
-button:active{
-transform:scale(.95);
-}
-
-
-.navBtn{
-width:260px;
-height:60px;
-font-size:20px;
-background:#0078ff;
-}
-
-
-.navBtn:hover{
-background:#2893ff;
-}
-
-
-#status{
-font-size:18px;
-margin-bottom:15px;
-font-weight:bold;
-}
-
-
-h3{
-margin-top:25px;
-margin-bottom:10px;
-color:#dddddd;
-}
-
-
-hr{
-border:1px solid #333;
-margin:25px 0;
-}
-
-
-.info{
-margin-top:20px;
-color:#bfbfbf;
-font-size:15px;
-line-height:1.6;
-}
-
-
-.active{
-background:#00b894 !important;
-box-shadow:0 0 18px #00b894;
-transform:scale(.95);
-}
-
-
-@media (max-width:600px){
-
-body{
-padding:10px;
-}
-
-
-.card{
-padding:18px;
-}
-
-
-button{
-width:90px;
-height:70px;
-font-size:24px;
-}
-
-
-.navBtn{
-width:220px;
-height:56px;
-font-size:18px;
-}
-
-
-.info{
-font-size:14px;
-}
-
-}
-
-</style>
-
+		@media(max-width:699px) {
+			#pc {
+				display: none
+			}
+		}
+	</style>
 </head>
-
 
 <body>
 
-<div class="card">
+	<div class="card">
 
+		<div id="status">🔴 Disconnected</div>
 
-<div id="status">
-🔴 Disconnected
-</div>
+		<h1>Material Handler</h1>
 
+		<a href="/superstructure.html">
+			<button class="nav">Superstructure Controls</button>
+		</a>
 
-<h1>
-Material Handler
-</h1>
+		<hr>
 
+		<div id="pc">
+			<h3>Turret Speed</h3>
 
-<a href="/superstructure.html">
+			<div id="speed">100</div>
 
-<button class="navBtn">
-Superstructure Controls
-</button>
+			<div id="bar">
+				<div id="fill"></div>
+			</div>
 
-</a>
+			<div class="info">
+				A / D = Turret<br>
+				← / → = Speed<br>
+				Shift + S = Stop
+			</div>
+		</div>
 
+		<div id="touch">
+			<h3>Turret</h3>
 
-<br><br>
+			<div style="display:flex;justify-content:space-between;color:#aaa">
+				<span>Left</span>
+				<span>STOP</span>
+				<span>Right</span>
+			</div>
 
+			<input id="slider" type="range" min="-220" max="220" value="0" step="10">
 
-<button id="aBtn">
-A
-</button>
+			<div id="tspeed">Speed: 0</div>
+			<div id="dir">Stopped</div>
 
+			<div class="info">Drag slider to move</div>
+		</div>
 
-<button id="dBtn">
-D
-</button>
+		<div id="lastcmd"></div>
 
+	</div>
 
-<hr>
+	<script>
 
+		let speed = 100;
+		const min = 100;
+		const max = 220;
+		const step = 10;
 
-<h3>
-Horn
-</h3>
+		let turretSpeed = 0;
 
+		const status = document.getElementById("status");
+		const speedEl = document.getElementById("speed");
+		const fill = document.getElementById("fill");
+		const slider = document.getElementById("slider");
+		const tspeed = document.getElementById("tspeed");
+		const dir = document.getElementById("dir");
+		const lastcmd = document.getElementById("lastcmd");
+		const host = location.hostname;
 
-<button id="hBtn">
-H
-</button>
+		const testMode =
+			location.protocol === "file:" ||
+			host === "localhost" ||
+			host === "127.0.0.1";
 
+		let ws = null;
 
-<div class="info">
+		if (testMode) {
 
-A = Turret Left<br>
+			status.innerText = "🟡 UI TEST MODE";
 
-D = Turret Right<br>
+		} else {
 
-H = Horn<br><br>
+			ws = new WebSocket(`ws://${location.host}/ws`);
 
-Hold keys for continuous movement.<br>
+			ws.onopen = () => {
+				status.innerText = "🟢 Connected";
+			};
 
-Release A/D to stop the turret.
+			ws.onclose = () => {
+				status.innerText = "🔴 Disconnected";
+			};
 
-</div>
+			ws.onerror = () => {
+				status.innerText = "🔴 Connection Error";
+			};
+		}
 
+		/* =========================
+			Send command
+			========================= */
 
-</div>
+		function tx(cmd) {
 
+			lastcmd.innerText = "Command: " + cmd;
 
-<script>
+			if (testMode) {
+				simulate(cmd);
+				return;
+			}
 
-function setActive(key,state){
+			if (ws && ws.readyState === WebSocket.OPEN)
+				ws.send(cmd);
+		}
 
-    const map={
-        "a":"aBtn",
-        "d":"dBtn",
-        "h":"hBtn"
-    };
 
+		/* =========================
+			Fake ESP32 in test mode
+			========================= */
 
-    const id=map[key];
+		function simulate(cmd) {
 
+			if (!testMode) return;
 
-    if(!id)
-        return;
+			if (cmd === "turret:stop") {
+				turretSpeed = 0;
+				showTouch(0);
+				return;
+			}
 
+			if (cmd === "system:stop") {
+				turretSpeed = 0;
+				held.clear();
 
-    const btn=
-        document.getElementById(id);
+				slider.value = 0;
 
+				showTouch(0);
 
-    if(!btn)
-        return;
+				status.innerText = "🟡 TEST: EMERGENCY STOP";
+				setTimeout(() => {
+					status.innerText = "🟡 UI TEST MODE";
+				}, 700);
 
+				return;
+			}
 
-    if(state)
-        btn.classList.add("active");
+			if (cmd.startsWith("turret:speed:")) {
 
-    else
-        btn.classList.remove("active");
+				turretSpeed = parseInt(
+					cmd.split(":")[2]
+				);
 
-}
+				showTouch(turretSpeed);
+			}
+		}
 
 
-let ws;
+		/* =========================
+			PC speed bar
+			========================= */
 
-let held=new Set();
+		function updateSpeed() {
 
+			speedEl.innerText = speed;
 
-function connect(){
+			fill.style.width =
+				((speed - min) / (max - min) * 100) + "%";
+		}
 
-    ws=
-      new WebSocket(
-        `ws://${location.host}/ws`
-      );
+		function changeSpeed(amount) {
 
+			speed += amount;
 
-    ws.onopen=()=>{
+			if (speed < min)
+				speed = min;
 
-        document.getElementById(
-            "status"
-        ).innerHTML=
-            "🟢 Connected";
+			if (speed > max)
+				speed = max;
 
-    };
+			updateSpeed();
 
+			if (held.has("a"))
+				tx("turret:speed:-" + speed);
 
-    ws.onclose=()=>{
+			if (held.has("d"))
+				tx("turret:speed:" + speed);
+		}
 
-        document.getElementById(
-            "status"
-        ).innerHTML=
-            "🔴 Disconnected";
 
-    };
+		/* =========================
+			Keyboard
+			========================= */
 
-}
+		function press(key) {
 
+			if (key === "a")
+				tx("turret:speed:-" + speed);
 
-connect();
+			if (key === "d")
+				tx("turret:speed:" + speed);
+		}
 
+		function release(key) {
 
-function tx(cmd){
+			if (key === "a" || key === "d")
+				tx("turret:stop");
+		}
 
-    if(
-        ws &&
-        ws.readyState ===
-        WebSocket.OPEN
-    ){
 
-        ws.send(cmd);
+		document.addEventListener("keydown", e => {
 
-    }
+			let k = e.key.toLowerCase();
 
-}
+			if (e.shiftKey && k === "s") {
 
+				e.preventDefault();
 
-function press(k){
+				tx("system:stop");
 
-    switch(k){
+				held.clear();
 
-        case "a":
+				return;
+			}
 
-            tx("turret:left");
+			if (k === "arrowleft") {
 
-            break;
+				e.preventDefault();
 
+				changeSpeed(-step);
 
-        case "d":
+				return;
+			}
 
-            tx("turret:right");
+			if (k === "arrowright") {
 
-            break;
+				e.preventDefault();
 
+				changeSpeed(step);
 
-        case "h":
+				return;
+			}
 
-            tx("nano:hornon");
+			if ((k === "a" || k === "d") && !held.has(k)) {
 
-            break;
+				held.add(k);
 
+				press(k);
+			}
+		});
 
-        default:
 
-            return;
+		document.addEventListener("keyup", e => {
 
-    }
+			let k = e.key.toLowerCase();
 
+			if (k === "a" || k === "d") {
 
-    setActive(
-        k,
-        true
-    );
+				held.delete(k);
 
-}
+				release(k);
+			}
+		});
 
 
-function release(k){
+		/* =========================
+			Touch slider
+			========================= */
 
-    switch(k){
+		function showTouch(v) {
 
-        case "a":
+			tspeed.innerText =
+				"Speed: " + Math.abs(v);
 
-        case "d":
+			if (v < 0)
+				dir.innerText = "Turret: Left";
 
-            tx("turret:stop");
+			else if (v > 0)
+				dir.innerText = "Turret: Right";
 
-            break;
+			else
+				dir.innerText = "Stopped";
+		}
 
 
-        case "h":
+		slider.addEventListener("input", () => {
 
-            tx("nano:hornoff");
+			let v = Number(slider.value);
 
-            break;
+			showTouch(v);
 
+			tx(
+				v
+					? "turret:speed:" + v
+					: "turret:stop"
+			);
+		});
 
-        default:
 
-            return;
+		slider.addEventListener("change", () => {
 
-    }
+			slider.value = 0;
 
+			showTouch(0);
 
-    setActive(
-        k,
-        false
-    );
+			tx("turret:stop");
+		});
 
-}
 
+		/* =========================
+			Safety
+			========================= */
 
-// ---------- Keyboard ----------
+		window.addEventListener("blur", () => {
 
-document.addEventListener(
-    "keydown",
-    e=>{
+			held.forEach(release);
 
-        const k=
-            e.key.toLowerCase();
+			held.clear();
 
+			slider.value = 0;
 
-        // Shift + S = Emergency Stop
-        if(
-            e.shiftKey &&
-            k=="s"
-        ){
+			showTouch(0);
 
-            tx(
-                "system:stop"
-            );
+			tx("turret:stop");
+		});
 
 
-            held.clear();
+		/* =========================
+			Start
+			========================= */
 
-
-            document
-              .querySelectorAll(
-                  "button"
-              )
-              .forEach(btn=>{
-
-                  btn.classList.remove(
-                      "active"
-                  );
-
-              });
-
-
-            return;
-        }
-
-
-        if(
-            held.has(k)
-        )
-            return;
-
-
-        held.add(k);
-
-        press(k);
-
-    }
-);
-
-
-// ---------- Keyboard Release ----------
-
-document.addEventListener(
-    "keyup",
-    e=>{
-
-        const k=
-            e.key.toLowerCase();
-
-
-        held.delete(k);
-
-        release(k);
-
-    }
-);
-
-
-// ---------- Window Blur ----------
-
-window.addEventListener(
-    "blur",
-    ()=>{
-
-        held.forEach(
-            k=>release(k)
-        );
-
-
-        held.clear();
-
-    }
-);
-
-
-// ---------- Page Hidden ----------
-
-document.addEventListener(
-    "visibilitychange",
-    ()=>{
-
-        if(
-            document.hidden
-        ){
-
-            held.forEach(
-                k=>release(k)
-            );
-
-
-            held.clear();
-
-        }
-
-    }
-);
-
-
-// ---------- Touch / Mouse Buttons ----------
-
-function bindButton(
-    id,
-    key
-){
-
-    const btn=
-        document.getElementById(
-            id
-        );
-
-
-    btn.addEventListener(
-        "mousedown",
-        ()=>{
-
-            if(
-                !held.has(key)
-            ){
-
-                held.add(key);
-
-                press(key);
-
-            }
-
-        }
-    );
-
-
-    btn.addEventListener(
-        "mouseup",
-        ()=>{
-
-            held.delete(key);
-
-            release(key);
-
-        }
-    );
-
-
-    btn.addEventListener(
-        "mouseleave",
-        ()=>{
-
-            if(
-                held.has(key)
-            ){
-
-                held.delete(key);
-
-                release(key);
-
-            }
-
-        }
-    );
-
-
-    btn.addEventListener(
-        "touchstart",
-        e=>{
-
-            e.preventDefault();
-
-
-            if(
-                !held.has(key)
-            ){
-
-                held.add(key);
-
-                press(key);
-
-            }
-
-        }
-    );
-
-
-    btn.addEventListener(
-        "touchend",
-        e=>{
-
-            e.preventDefault();
-
-
-            held.delete(key);
-
-            release(key);
-
-        }
-    );
-
-}
-
-
-bindButton(
-    "aBtn",
-    "a"
-);
-
-
-bindButton(
-    "dBtn",
-    "d"
-);
-
-
-bindButton(
-    "hBtn",
-    "h"
-);
-
-</script>
+		updateSpeed();
+		showTouch(0);
+	</script>
 
 </body>
 
