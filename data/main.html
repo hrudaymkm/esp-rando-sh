@@ -8,12 +8,13 @@
 <meta name="viewport"
       content="width=device-width,initial-scale=1">
 
-<title>Material Handler - Drive Console</title>
+<title>Material Handler - Turret Console</title>
 
 <link rel="icon" href="/favicon.ico">
 
 
 <style>
+
 body{
 background:#0f1117;
 color:white;
@@ -22,6 +23,7 @@ text-align:center;
 margin:0;
 padding:20px;
 }
+
 
 .card{
 max-width:500px;
@@ -32,11 +34,13 @@ padding:25px;
 box-shadow:0 0 20px rgba(0,0,0,.5);
 }
 
+
 h1{
 color:#4da6ff;
 margin-top:0;
 margin-bottom:20px;
 }
+
 
 button{
 width:100px;
@@ -53,13 +57,16 @@ touch-action:none;
 transition:.15s;
 }
 
+
 button:hover{
 background:#3e4a66;
 }
 
+
 button:active{
 transform:scale(.95);
 }
+
 
 .navBtn{
 width:260px;
@@ -68,9 +75,11 @@ font-size:20px;
 background:#0078ff;
 }
 
+
 .navBtn:hover{
 background:#2893ff;
 }
+
 
 #status{
 font-size:18px;
@@ -78,16 +87,19 @@ margin-bottom:15px;
 font-weight:bold;
 }
 
+
 h3{
 margin-top:25px;
 margin-bottom:10px;
 color:#dddddd;
 }
 
+
 hr{
 border:1px solid #333;
 margin:25px 0;
 }
+
 
 .info{
 margin-top:20px;
@@ -96,11 +108,13 @@ font-size:15px;
 line-height:1.6;
 }
 
+
 .active{
 background:#00b894 !important;
 box-shadow:0 0 18px #00b894;
 transform:scale(.95);
 }
+
 
 @media (max-width:600px){
 
@@ -108,9 +122,11 @@ body{
 padding:10px;
 }
 
+
 .card{
 padding:18px;
 }
+
 
 button{
 width:90px;
@@ -118,125 +134,177 @@ height:70px;
 font-size:24px;
 }
 
+
 .navBtn{
 width:220px;
 height:56px;
 font-size:18px;
 }
 
+
 .info{
 font-size:14px;
 }
 
 }
+
 </style>
 
 </head>
+
+
 <body>
 
 <div class="card">
 
-<div id="status">🔴 Disconnected</div>
 
-<h1>Drive Console</h1>
+<div id="status">
+🔴 Disconnected
+</div>
+
+
+<h1>
+Material Handler
+</h1>
+
 
 <a href="/superstructure.html">
+
 <button class="navBtn">
 Superstructure Controls
 </button>
+
 </a>
+
 
 <br><br>
 
-<button id="wBtn">W</button>
 
-<br>
+<button id="aBtn">
+A
+</button>
 
-<button id="aBtn">A</button>
-<button id="dBtn">D</button>
 
-<br>
+<button id="dBtn">
+D
+</button>
 
-<button id="sBtn">S</button>
 
 <hr>
 
-<h3>Horn</h3>
 
-<button id="hBtn">H</button>
+<h3>
+Horn
+</h3>
+
+
+<button id="hBtn">
+H
+</button>
+
 
 <div class="info">
 
-W = Forward<br>
-S = Reverse<br>
-A = Steer Left<br>
-D = Steer Right<br>
+A = Turret Left<br>
+
+D = Turret Right<br>
+
 H = Horn<br><br>
 
 Hold keys for continuous movement.<br>
-Shift + S = Emergency Stop
+
+Release A/D to stop the turret.
 
 </div>
 
+
 </div>
+
 
 <script>
 
 function setActive(key,state){
 
     const map={
-        "w":"wBtn",
         "a":"aBtn",
-        "s":"sBtn",
         "d":"dBtn",
         "h":"hBtn"
     };
 
+
     const id=map[key];
 
-    if(!id) return;
 
-    const btn=document.getElementById(id);
+    if(!id)
+        return;
 
-    if(!btn) return;
+
+    const btn=
+        document.getElementById(id);
+
+
+    if(!btn)
+        return;
+
 
     if(state)
         btn.classList.add("active");
+
     else
         btn.classList.remove("active");
+
 }
 
+
 let ws;
+
 let held=new Set();
 
-let lastMessage=Date.now();
 
 function connect(){
 
-    ws=new WebSocket(`ws://${location.host}/ws`);
+    ws=
+      new WebSocket(
+        `ws://${location.host}/ws`
+      );
+
 
     ws.onopen=()=>{
 
-        document.getElementById("status").innerHTML="🟢 Connected";
-
-        lastMessage=Date.now();
+        document.getElementById(
+            "status"
+        ).innerHTML=
+            "🟢 Connected";
 
     };
 
-    ws.onmessage=()=>{
 
-        lastMessage=Date.now();
+    ws.onclose=()=>{
+
+        document.getElementById(
+            "status"
+        ).innerHTML=
+            "🔴 Disconnected";
 
     };
 
 }
 
+
 connect();
+
 
 function tx(cmd){
 
-    if(ws && ws.readyState===WebSocket.OPEN)
+    if(
+        ws &&
+        ws.readyState ===
+        WebSocket.OPEN
+    ){
+
         ws.send(cmd);
+
+    }
 
 }
 
@@ -244,157 +312,309 @@ function tx(cmd){
 function press(k){
 
     switch(k){
-case "w":
-    tx("drive:forward");
-    break;
 
-case "s":
-    tx("drive:reverse");
-    break;
+        case "a":
 
-case "a":
-    tx("steer:left");
-    break;
+            tx("turret:left");
 
-case "d":
-    tx("steer:right");
-    break;
+            break;
 
-case "h":
-    tx("nano:hornon");
-    break;
+
+        case "d":
+
+            tx("turret:right");
+
+            break;
+
+
+        case "h":
+
+            tx("nano:hornon");
+
+            break;
+
+
         default:
+
             return;
 
     }
 
-    setActive(k,true);
+
+    setActive(
+        k,
+        true
+    );
 
 }
+
 
 function release(k){
 
     switch(k){
-case "w":
-case "s":
-    tx("drive:stop");
-    break;
 
-case "a":
-case "d":
-    tx("steer:center");
-    break;
+        case "a":
 
-case "h":
-    tx("nano:hornoff");
-    break;
+        case "d":
+
+            tx("turret:stop");
+
+            break;
+
+
+        case "h":
+
+            tx("nano:hornoff");
+
+            break;
+
+
         default:
+
             return;
 
     }
 
-    setActive(k,false);
+
+    setActive(
+        k,
+        false
+    );
 
 }
 
-document.addEventListener("keydown",e=>{
 
-    const k=e.key.toLowerCase();
+// ---------- Keyboard ----------
 
-    if(e.shiftKey && k=="s"){
+document.addEventListener(
+    "keydown",
+    e=>{
 
-      tx("system:stop");
+        const k=
+            e.key.toLowerCase();
+
+
+        // Shift + S = Emergency Stop
+        if(
+            e.shiftKey &&
+            k=="s"
+        ){
+
+            tx(
+                "system:stop"
+            );
+
+
+            held.clear();
+
+
+            document
+              .querySelectorAll(
+                  "button"
+              )
+              .forEach(btn=>{
+
+                  btn.classList.remove(
+                      "active"
+                  );
+
+              });
+
+
+            return;
+        }
+
+
+        if(
+            held.has(k)
+        )
+            return;
+
+
+        held.add(k);
+
+        press(k);
+
+    }
+);
+
+
+// ---------- Keyboard Release ----------
+
+document.addEventListener(
+    "keyup",
+    e=>{
+
+        const k=
+            e.key.toLowerCase();
+
+
+        held.delete(k);
+
+        release(k);
+
+    }
+);
+
+
+// ---------- Window Blur ----------
+
+window.addEventListener(
+    "blur",
+    ()=>{
+
+        held.forEach(
+            k=>release(k)
+        );
+
 
         held.clear();
 
-        document.querySelectorAll("button").forEach(btn=>{
-            btn.classList.remove("active");
-        });
-
-        return;
     }
+);
 
-    if(held.has(k))
-        return;
 
-    held.add(k);
+// ---------- Page Hidden ----------
 
-    press(k);
+document.addEventListener(
+    "visibilitychange",
+    ()=>{
 
-});
+        if(
+            document.hidden
+        ){
 
-document.addEventListener("keyup",e=>{
+            held.forEach(
+                k=>release(k)
+            );
 
-    const k=e.key.toLowerCase();
 
-    held.delete(k);
-
-    release(k);
-
-});
-
-window.addEventListener("blur",()=>{
-
-    held.forEach(k=>release(k));
-
-    held.clear();
-
-});
-
-document.addEventListener("visibilitychange",()=>{
-
-    if(document.hidden){
-
-        held.forEach(k=>release(k));
-
-        held.clear();
-
-    }
-
-});
-
-function bindButton(id,key){
-
-    const btn=document.getElementById(id);
-
-    btn.addEventListener("mousedown",()=>press(key));
-
-    btn.addEventListener("mouseup",()=>release(key));
-
-    btn.addEventListener("mouseleave",()=>release(key));
-
-    btn.addEventListener("touchstart",e=>{
-
-        e.preventDefault();
-
-        if(!held.has(key)){
-
-            held.add(key);
-
-            press(key);
+            held.clear();
 
         }
 
-    });
+    }
+);
 
-    btn.addEventListener("touchend",e=>{
 
-        e.preventDefault();
+// ---------- Touch / Mouse Buttons ----------
 
-        held.delete(key);
+function bindButton(
+    id,
+    key
+){
 
-        release(key);
+    const btn=
+        document.getElementById(
+            id
+        );
 
-    });
+
+    btn.addEventListener(
+        "mousedown",
+        ()=>{
+
+            if(
+                !held.has(key)
+            ){
+
+                held.add(key);
+
+                press(key);
+
+            }
+
+        }
+    );
+
+
+    btn.addEventListener(
+        "mouseup",
+        ()=>{
+
+            held.delete(key);
+
+            release(key);
+
+        }
+    );
+
+
+    btn.addEventListener(
+        "mouseleave",
+        ()=>{
+
+            if(
+                held.has(key)
+            ){
+
+                held.delete(key);
+
+                release(key);
+
+            }
+
+        }
+    );
+
+
+    btn.addEventListener(
+        "touchstart",
+        e=>{
+
+            e.preventDefault();
+
+
+            if(
+                !held.has(key)
+            ){
+
+                held.add(key);
+
+                press(key);
+
+            }
+
+        }
+    );
+
+
+    btn.addEventListener(
+        "touchend",
+        e=>{
+
+            e.preventDefault();
+
+
+            held.delete(key);
+
+            release(key);
+
+        }
+    );
 
 }
 
-bindButton("wBtn","w");
-bindButton("aBtn","a");
-bindButton("sBtn","s");
-bindButton("dBtn","d");
-bindButton("hBtn","h");
+
+bindButton(
+    "aBtn",
+    "a"
+);
+
+
+bindButton(
+    "dBtn",
+    "d"
+);
+
+
+bindButton(
+    "hBtn",
+    "h"
+);
 
 </script>
+
 </body>
+
 </html>
